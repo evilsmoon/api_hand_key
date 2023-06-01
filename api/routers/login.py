@@ -10,7 +10,7 @@ from typing import Any
 from api import deps
 from core import security
 from core.config import settings
-
+from pydantic import BaseModel
 
 # Tyhy5gKCu1M1rSgt
 # url: str = "https://eifkdjviahuhlnkjjijr.supabase.co"
@@ -19,6 +19,9 @@ from core.config import settings
 
 router = APIRouter()
 
+class Datos(BaseModel):
+    
+    data : str 
 
 @router.post("/access-token")
 def login_access_token(
@@ -35,15 +38,11 @@ def login_access_token(
 
 @router.post("/create-user")
 def create_user(
+    body:Datos,
     db:Session = Depends(deps.get_db),
-    form_data: OAuth2PasswordRequestForm = Depends()
 )->any:
-    print(form_data.username)
-    print(form_data.password)
-
-    print(deps.desencriptar(form_data.username))
-    print(deps.desencriptar(form_data.password))
-
+    print(body.data)
+""" 
     usuario = models.Usuario(
         usu_name ="",
         usu_lastname ="",
@@ -56,15 +55,15 @@ def create_user(
         usu_phone ="",
         usu_phonehome ="",
         usu_numhome ="",
-        usu_email    = form_data.username,
-        usu_password = form_data.password
+        usu_email    = deps.desencriptar(form_data.username),
+        usu_password = deps.desencriptar(form_data.password)
     )
-
-    print(usuario)
+ """
+"""     print(usuario.__dict__)
     
-    # resp = crud.usuario.create_usuario(db=db,obj_in=usuario)
+    resp = crud.usuario.create_usuario(db=db,obj_in=usuario)
     
-    # print(resp)
+    print(resp.__dict__) """
 
 
     # user = crud.usuario.authenticate(

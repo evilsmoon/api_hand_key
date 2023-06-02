@@ -58,7 +58,7 @@ def reescale_image(b64_image):
 
 
         
-def extrart_feateres(b64_image,model_path):
+def extrart_features(b64_image,model_path):
 
     model = InceptionV3(weights='imagenet', include_top=False)
 

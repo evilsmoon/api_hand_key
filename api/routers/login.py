@@ -12,7 +12,7 @@ from core import security
 from core.config import settings
 from pydantic import BaseModel
 import base64
-import feature_extraction as fe
+from ..feature_extraction import extrart_features
 # Tyhy5gKCu1M1rSgt
 # url: str = "https://eifkdjviahuhlnkjjijr.supabase.co"
 # key: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpZmtkanZpYWh1aGxua2pqaWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODU1OTQzNjEsImV4cCI6MjAwMTE3MDM2MX0.Sc67LOi5EqpFchUYjNot6l0SxHN9tHZzmmHJ8YW9LVk"
@@ -90,7 +90,7 @@ def send_auth(
         id=body.usu_id
     )
 
-    model_prediction = fe.extrart_feateres(body.photoHand,model_path)
+    model_prediction = extrart_features(body.photoHand,model_path)
 
     if model_prediction:
         return {"msg": "true"}

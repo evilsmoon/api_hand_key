@@ -21,28 +21,44 @@ class CRUDUsuario(CRUDBase[Usuario]):
 
     def get_usuario(self,db:Session,*,usu_email:str):
         
-        data = db.query(Usuario).all()
-        if data == []:
-            return 
+        return db.query(Usuario).filter(Usuario.usu_email.__eq__(usu_email)).first()   
+
+
+    def login(self, db: Session, *, email:str,password:str):
+
+        usuarioDB = self.get_usuario(db=db,usu_email=email)
+        if not verify_password(deps.desencriptar_base64(password), usuarioDB.usu_password):
+            return None
         
-        for usuario in data:
-            
-            print("data -> ",usuario)
+        return usuarioDB
 
     
     def create_usuario(self, db: Session, *, obj_in: Usuario):
 
-        self.get_usuario(db=db,usu_email=obj_in.usu_email)
-
-        # print(isExistUsuario)
-        obj_in.usu_password  = get_password_hash(obj_in.usu_password)
-        db.add(obj_in)
-        db.commit()
-        db.refresh(obj_in)
+        usuarioDB = self.get_usuario(db=db,usu_email=deps.encriptar(obj_in.usu_email))
         
-        return obj_in
-    
+        if usuarioDB == None:
+            obj_in.usu_password  = get_password_hash(obj_in.usu_password)
+            obj_in.usu_nombre    = deps.encriptar(obj_in.usu_nombre) 
+            obj_in.usu_apellido  = deps.encriptar(obj_in.usu_apellido) 
+            obj_in.usu_genero    = deps.encriptar(obj_in.usu_genero) 
+            obj_in.usu_pais      = deps.encriptar(obj_in.usu_pais) 
+            obj_in.usu_edad      = deps.encriptar(obj_in.usu_edad) 
+            obj_in.usu_provincia = deps.encriptar(obj_in.usu_provincia) 
+            obj_in.usu_canton    = deps.encriptar(obj_in.usu_canton) 
+            obj_in.usu_parroquia = deps.encriptar(obj_in.usu_parroquia) 
+            obj_in.usu_street1   = deps.encriptar(obj_in.usu_street1) 
+            obj_in.usu_street2   = deps.encriptar(obj_in.usu_street2) 
+            obj_in.usu_phone     = deps.encriptar(obj_in.usu_phone) 
+            obj_in.usu_phonehome = deps.encriptar(obj_in.usu_phonehome) 
+            obj_in.usu_numhome   = deps.encriptar(obj_in.usu_numhome) 
+            obj_in.usu_email     = deps.encriptar(obj_in.usu_email) 
 
+            db.add(obj_in)
+            db.commit()
+            db.refresh(obj_in)
+            
+            return obj_in
 
 usuario = CRUDUsuario(Usuario)
 

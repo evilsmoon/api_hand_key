@@ -1,17 +1,17 @@
-import crud , models
+import crud , models,schemas
 from datetime import timedelta
 from fastapi import APIRouter, Body, Depends, HTTPException,status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import JSONResponse
-
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 from typing import Any
-
+import json
 from api import deps
 from core import security
 from core.config import settings
 from pydantic import BaseModel
-
+import base64
 # Tyhy5gKCu1M1rSgt
 # url: str = "https://eifkdjviahuhlnkjjijr.supabase.co"
 # key: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpZmtkanZpYWh1aGxua2pqaWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODU1OTQzNjEsImV4cCI6MjAwMTE3MDM2MX0.Sc67LOi5EqpFchUYjNot6l0SxHN9tHZzmmHJ8YW9LVk"
@@ -22,42 +22,91 @@ router = APIRouter()
 class Datos(BaseModel):
     
     data : str 
+    
+
+class AuthVerificate(BaseModel):
+    usu_id : str 
+    photoHand : str 
 
 @router.post("/access-token")
 def login_access_token(
     db: Session = Depends(deps.get_db), 
-    form_data: OAuth2PasswordRequestForm = Depends()
+     form_data: OAuth2PasswordRequestForm = Depends()
 )-> Any:
+    
+    resp = crud.usuario.login(
+        db=db,
+        email=form_data.username,
+        password=form_data.password,
+    )
+    
+    if resp != None:
+        print(resp.__dict__)
+        return {"msg": "true","usuario":resp}
+    else:
+        return {"msg": "false","usuario":""}
 
 
-    print(form_data.username)
-    print(form_data.password)
-
-    user = crud.usuario.get_all(db)
-    print(user)
 
 @router.post("/create-user")
 def create_user(
     body:Datos,
     db:Session = Depends(deps.get_db),
 )->any:
-    print(body.data)
-""" 
-    usuario = models.Usuario(
-        usu_name ="",
-        usu_lastname ="",
-        usu_country ="",
-        usu_province ="",
-        usu_canton ="",
-        usu_parish ="",
-        usu_street1 ="",
-        usu_street2 ="",
-        usu_phone ="",
-        usu_phonehome ="",
-        usu_numhome ="",
-        usu_email    = deps.desencriptar(form_data.username),
-        usu_password = deps.desencriptar(form_data.password)
+    
+    contenido_cifrado = base64.b64decode(body.data)
+    contenido_desencriptado = bytearray()
+
+    for i in range(len(contenido_cifrado)):
+        byte_desencriptado = contenido_cifrado[i] ^ ord(settings.SECRET_KEY[i % len(settings.SECRET_KEY)])
+        contenido_desencriptado.append(byte_desencriptado)
+
+    texto_desencriptado = contenido_desencriptado.decode('utf-8')
+    data_json = json.loads(texto_desencriptado)
+
+    usuarioSchema = schemas.Usuario(**data_json)
+    usuario = models.Usuario(**jsonable_encoder(usuarioSchema))
+    resp = crud.usuario.create_usuario(db=db,obj_in=usuario)
+
+    if resp == None:
+        return {"msg": "true"}
+    else:
+        return {"msg": "false"}
+
+
+@router.post("/send-auth")
+def send_auth(
+    body:AuthVerificate,
+    db:Session = Depends(deps.get_db),
+)->any:
+    
+    print(
+        body
     )
+    """     contenido_cifrado = base64.b64decode(body.data)
+        contenido_desencriptado = bytearray()
+
+        for i in range(len(contenido_cifrado)):
+            byte_desencriptado = contenido_cifrado[i] ^ ord(settings.SECRET_KEY[i % len(settings.SECRET_KEY)])
+            contenido_desencriptado.append(byte_desencriptado)
+
+        texto_desencriptado = contenido_desencriptado.decode('utf-8')
+        data_json = json.loads(texto_desencriptado)
+
+        usuarioSchema = schemas.Usuario(**data_json)
+        usuario = models.Usuario(**jsonable_encoder(usuarioSchema))
+        resp = crud.usuario.create_usuario(db=db,obj_in=usuario) """
+
+    if True:
+        return {"msg": "true"}
+    else:
+        return {"msg": "false"}
+     
+
+
+    # print(jsonable_encoder())\
+""" 
+
  """
 """     print(usuario.__dict__)
     

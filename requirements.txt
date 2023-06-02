@@ -27,8 +27,6 @@ keras==2.11.0
 keyring==23.13.1
 kiwisolver==1.4.4
 libclang==16.0.0
-MarkupSafe==2.1.2
-matplotlib==3.7.1
 mediapipe==0.10.0
 ml-dtypes==0.1.0
 more-itertools==9.1.0

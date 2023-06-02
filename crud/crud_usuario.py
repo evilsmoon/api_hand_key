@@ -59,6 +59,9 @@ class CRUDUsuario(CRUDBase[Usuario]):
             db.refresh(obj_in)
             
             return obj_in
+    
+    def get_usuario_id(self, db: Session, id: int):
+        return db.query(Usuario.usu_path).filter(Usuario.usu_id == id).first()
 
 usuario = CRUDUsuario(Usuario)
 

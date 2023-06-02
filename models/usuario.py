@@ -18,6 +18,7 @@ class Usuario(Base):
     usu_numhome       = Column(Text)
     usu_email         = Column(Text)
     usu_password      = Column(Text)
+    usu_path          = Column(Text)
  
 
 """ 

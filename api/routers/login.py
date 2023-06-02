@@ -12,6 +12,7 @@ from core import security
 from core.config import settings
 from pydantic import BaseModel
 import base64
+import feature_extraction as fe
 # Tyhy5gKCu1M1rSgt
 # url: str = "https://eifkdjviahuhlnkjjijr.supabase.co"
 # key: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVpZmtkanZpYWh1aGxua2pqaWpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODU1OTQzNjEsImV4cCI6MjAwMTE3MDM2MX0.Sc67LOi5EqpFchUYjNot6l0SxHN9tHZzmmHJ8YW9LVk"
@@ -83,26 +84,19 @@ def send_auth(
     print(
         body
     )
-    """     contenido_cifrado = base64.b64decode(body.data)
-        contenido_desencriptado = bytearray()
 
-        for i in range(len(contenido_cifrado)):
-            byte_desencriptado = contenido_cifrado[i] ^ ord(settings.SECRET_KEY[i % len(settings.SECRET_KEY)])
-            contenido_desencriptado.append(byte_desencriptado)
+    model_path = crud.usuario.get_usuario_id(
+        db=db,
+        id=body.usu_id
+    )
 
-        texto_desencriptado = contenido_desencriptado.decode('utf-8')
-        data_json = json.loads(texto_desencriptado)
+    model_prediction = fe.extrart_feateres(body.photoHand,model_path)
 
-        usuarioSchema = schemas.Usuario(**data_json)
-        usuario = models.Usuario(**jsonable_encoder(usuarioSchema))
-        resp = crud.usuario.create_usuario(db=db,obj_in=usuario) """
-
-    if True:
+    if model_prediction:
         return {"msg": "true"}
     else:
         return {"msg": "false"}
-     
-
+    
 
     # print(jsonable_encoder())\
 """ 
